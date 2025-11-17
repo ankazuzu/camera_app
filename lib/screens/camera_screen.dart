@@ -79,6 +79,9 @@ class _CameraScreenState extends State<CameraScreen> {
 
     if (_isUploading) return;
 
+    // Hide keyboard if open
+    FocusScope.of(context).unfocus();
+
     setState(() {
       _isUploading = true;
       _errorMessage = null;
@@ -140,6 +143,10 @@ class _CameraScreenState extends State<CameraScreen> {
     } catch (e) {
       _showSnackBar('Error: $e', isError: true);
     } finally {
+      // Hide keyboard after upload completes
+      if (mounted) {
+        FocusScope.of(context).unfocus();
+      }
       setState(() => _isUploading = false);
     }
   }
@@ -488,6 +495,8 @@ class _CameraScreenState extends State<CameraScreen> {
                               padding: const EdgeInsets.all(8),
                               decoration: BoxDecoration(
                                 gradient: const LinearGradient(
+                                  begin: Alignment.centerLeft,
+                                  end: Alignment.bottomRight,
                                   colors: [
                                     Color(0xFF667eea),
                                     Color(0xFF764ba2),
@@ -503,7 +512,7 @@ class _CameraScreenState extends State<CameraScreen> {
                             ),
                           ),
                           maxLines: 2,
-                          maxLength: 200,
+                          maxLength: 100,
                         ),
 
                         const SizedBox(height: 20),
@@ -514,23 +523,33 @@ class _CameraScreenState extends State<CameraScreen> {
                           height: 64,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(20),
-                            gradient: _isUploading
-                                ? LinearGradient(
-                                    colors: [
-                                      Colors.grey[700]!,
-                                      Colors.grey[800]!,
-                                    ],
-                                  )
-                                : const LinearGradient(
-                                    colors: [
+                            gradient: LinearGradient(
+                              colors: _isUploading
+                                  ? [
+                                      const Color(
+                                        0xFF667eea,
+                                      ).withValues(alpha: 0.5),
+                                      const Color(
+                                        0xFF764ba2,
+                                      ).withValues(alpha: 0.5),
+                                    ]
+                                  : const [
                                       Color(0xFF667eea),
                                       Color(0xFF764ba2),
                                     ],
-                                    begin: Alignment.centerLeft,
-                                    end: Alignment.centerRight,
-                                  ),
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
                             boxShadow: _isUploading
-                                ? []
+                                ? [
+                                    BoxShadow(
+                                      color: const Color(
+                                        0xFF667eea,
+                                      ).withValues(alpha: 0.2),
+                                      blurRadius: 10,
+                                      offset: const Offset(0, 3),
+                                    ),
+                                  ]
                                 : [
                                     BoxShadow(
                                       color: const Color(
@@ -540,6 +559,12 @@ class _CameraScreenState extends State<CameraScreen> {
                                       offset: const Offset(0, 5),
                                     ),
                                   ],
+                            border: _isUploading
+                                ? Border.all(
+                                    color: Colors.white.withValues(alpha: 0.2),
+                                    width: 1.5,
+                                  )
+                                : null,
                           ),
                           child: Material(
                             color: Colors.transparent,
@@ -552,19 +577,23 @@ class _CameraScreenState extends State<CameraScreen> {
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
                                         children: [
-                                          const SizedBox(
+                                          SizedBox(
                                             width: 24,
                                             height: 24,
                                             child: CircularProgressIndicator(
                                               strokeWidth: 2.5,
-                                              color: Colors.white,
+                                              color: Colors.white.withValues(
+                                                alpha: 0.9,
+                                              ),
                                             ),
                                           ),
                                           const SizedBox(width: 12),
-                                          const Text(
+                                          Text(
                                             'Uploading...',
                                             style: TextStyle(
-                                              color: Colors.white,
+                                              color: Colors.white.withValues(
+                                                alpha: 0.9,
+                                              ),
                                               fontSize: 18,
                                               fontWeight: FontWeight.bold,
                                               letterSpacing: 0.5,

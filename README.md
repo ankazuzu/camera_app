@@ -119,4 +119,3 @@ The app sends a POST request with multipart/form-data:
 
 **Your Name**
 - GitHub: [@ankazuzu](https://github.com/ankazuzu)
-# camera_app
