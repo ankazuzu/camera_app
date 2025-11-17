@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'screens/camera_screen.dart';
+import 'services/permission_service.dart';
 
 void main() async {
   // Ensure Flutter binding is initialized
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Request permissions on app start
+  final permissionService = PermissionService();
+  await permissionService.requestPermissions();
 
   // Get available cameras
   final cameras = await availableCameras();
